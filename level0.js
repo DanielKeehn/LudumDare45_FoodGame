@@ -45,6 +45,7 @@ class level0 extends Phaser.Scene{
 	update(time, delta){
 		this.physics.world.collide(this.player, this.platforms);
 		this.physics.world.collide(this.platforms, this.items);
+		this.physics.world.collide(this.player, this.items, this.collectItem, null, this);
 		//this.physics.world.collide()
 
 		this.player.body.velocity.x = 0;
@@ -79,6 +80,10 @@ class level0 extends Phaser.Scene{
 		item.body.gravity.y = 1000;
 		item.body.bounce.y = 0.3 + Math.random() * 0.2;
 		//item.body.collideWorldBounds = true;
+	}
+
+	collectItem(player, item){
+		item.destroy();
 	}
 
 }
