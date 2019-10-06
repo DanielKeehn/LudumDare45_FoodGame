@@ -18,7 +18,8 @@ class level1 extends Phaser.Scene{
 
         //This are the variables that must be changed every level, it is the recipe ingredients and name
         var recipe = eggsRecipe;
-        var recipeName = eggsRecipeName;
+		var recipeName = eggsRecipeName;
+		var playerIngredientsCollected = eggsRecipePlayer;
 	}
 
 	preload(){
@@ -39,7 +40,7 @@ class level1 extends Phaser.Scene{
 	create(){
         this.createUIVariables();
         //Male sure this changes every level
-        this.createRecipeUI(eggsRecipe, eggsRecipeName);
+		this.createRecipeUI(eggsRecipe, eggsRecipeName);
 
 		//this.image = this.add.image(400, 300, 'player');
 
@@ -173,8 +174,8 @@ class level1 extends Phaser.Scene{
         return new Promise(resolve => setTimeout(resolve, ms));
 	}
 	
+	//Call this when you do not get the right amount of items or die
 	restart(){
 		this.scene.restart();
 	}
-
 }
