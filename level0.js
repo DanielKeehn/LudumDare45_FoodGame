@@ -103,6 +103,19 @@ class level0 extends Phaser.Scene{
 		//else if(this.cursors.up.isDown == false && this.player.body.touching.down == false){
 		//	this.player.body.velocity.y = 300;
 		//}
+		this.UpdateCameraAndUI();
+	}
+
+	UpdateCameraAndUI(){
+		let xDelta = this.cameras.main.scrollX;
+		this.cameras.main.centerOnX(this.player.x);
+		xDelta -= this.cameras.main.scrollX;
+		if(xDelta == 0)
+			return;
+		this.collectItemUI.x -= xDelta;
+		this.collectItemUIAmount.x -= xDelta;
+		this.RecipeUI.x -= xDelta;
+		this.itemIngredient.x -= xDelta;
 	}
 
 	createUIVariables() {
@@ -110,6 +123,7 @@ class level0 extends Phaser.Scene{
         this.itemsCollected = 0;
         this.collectItemVisible = false;
         
+		//let xAnchor = this.cameras.main.scrollX - (this.cameras.main.width / 2);
         this.collectItemUI = this.add.text(0,0,"You Collected An Item!");
         this.collectItemUIAmount = this.add.text(0,15,this.itemsCollected + "/" + this.itemsLefttoCollect);
         this.collectItemUI.setVisible(false);
@@ -152,9 +166,10 @@ class level0 extends Phaser.Scene{
             this.collectItemUI.setVisible(false);
             this.collectItemUIAmount.setVisible(false);   
         }
-        this.collectItemUI = this.add.text(0,0,"You Collected An Item!");
+		let xAnchor = this.player.x - (this.cameras.main.width / 2);
+        this.collectItemUI = this.add.text(xAnchor,0,"You Collected An Item!");
         this.collectItemUI.setVisible(true);
-        this.collectItemUIAmount = this.add.text(0,15,this.itemsCollected + "/" + this.itemsLefttoCollect);
+        this.collectItemUIAmount = this.add.text(xAnchor,15,this.itemsCollected + "/" + this.itemsLefttoCollect);
         await this.sleep(2000);
         this.collectItemVisible = false;
         this.collectItemUI.setVisible(false);
