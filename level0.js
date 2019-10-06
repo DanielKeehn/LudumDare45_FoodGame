@@ -6,6 +6,19 @@ class level0 extends Phaser.Scene{
 		this.items;
 		this.player;
 		this.cursors;
+
+		//These variables are text that show up when item is collected
+        var collectItemUI;
+        var collectItemUIAmount;
+        var collectItemVisible;
+
+        //These are ints saying how many items a player need and how many they have collected
+        var itemsLefttoCollect;
+        var itemsCollected;
+
+        //These are variables dealing with UI That Display the Recipe
+        var RecipeUI;
+        var itemIngredient;
 	}
 
 	preload(){
@@ -13,8 +26,8 @@ class level0 extends Phaser.Scene{
 		key: 'player', 
 		url: 'Resources/mouse_run.png', 
 		frameConfig:{
-			frameWidth: 700, 
-			frameHeight: 300,
+			frameWidth: 650, 
+			frameHeight: 200,
 			startFrame: 0,
 			endFrame: 38
 			}
@@ -24,6 +37,9 @@ class level0 extends Phaser.Scene{
 	}
 
 	create(){
+		this.createUIVariables();
+        this.createRecipeUI(); 
+
 		//this.image = this.add.image(400, 300, 'player');
 
 		this.platforms = this.physics.add.staticGroup();
@@ -89,6 +105,22 @@ class level0 extends Phaser.Scene{
 		//}
 	}
 
+	createUIVariables() {
+        this.itemsLefttoCollect = 12;
+        this.itemsCollected = 0;
+        this.collectItemVisible = false;
+        
+        this.collectItemUI = this.add.text(0,0,"You Collected An Item!");
+        this.collectItemUIAmount = this.add.text(0,15,this.itemsCollected + "/" + this.itemsLefttoCollect);
+        this.collectItemUI.setVisible(false);
+        this.collectItemUIAmount.setVisible(false);
+    }
+
+    createRecipeUI() {
+        this.RecipeUI = this.add.text(585,0,"Recipe: Name of Desert");
+        this.itemIngredient = this.add.text(585,20,"x12 Rectangles");
+    }
+
 	makePlatform(x, y, width = 1){
 		let ground = this.platforms.create(x, y, 'platform');
 		//ground.enableBody(false, 0, 0, true, true);
@@ -109,6 +141,29 @@ class level0 extends Phaser.Scene{
 	//This method is called when the player collides with an Item
 	collectItem(player, item){
 		item.destroy();
+		this.itemsCollected++;
+        this.collectItemVisible = true;
+        this.amountofItemCollectedUI(player, item);
 	}
+
+	//This function runs everytime an item is collected. It shows up momentarily of the center top of a screen
+    async amountofItemCollectedUI(player, item) {
+        if (this.collectItemVisible == true) {
+            this.collectItemUI.setVisible(false);
+            this.collectItemUIAmount.setVisible(false);   
+        }
+        this.collectItemUI = this.add.text(0,0,"You Collected An Item!");
+        this.collectItemUI.setVisible(true);
+        this.collectItemUIAmount = this.add.text(0,15,this.itemsCollected + "/" + this.itemsLefttoCollect);
+        await this.sleep(2000);
+        this.collectItemVisible = false;
+        this.collectItemUI.setVisible(false);
+        this.collectItemUIAmount.setVisible(false);
+    }
+
+    //This allows for the UI to stay on the screen for a small amount of time but eventually disaapear
+    sleep(ms) {
+        return new Promise(resolve => setTimeout(resolve, ms));
+    }
 
 }
