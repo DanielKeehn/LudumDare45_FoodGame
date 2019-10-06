@@ -94,7 +94,7 @@ class level1 extends Phaser.Scene{
     }
 
     createRecipeUI() {
-        this.RecipeUI = this.add.text(585,0,"Recipe: Name of Desert");
+        this.RecipeUI = this.add.text(585,0, "Recipe: Name of Desert");
         this.itemIngredient = this.add.text(585,20,"x12 Rectangles");
     }
 
