@@ -42,46 +42,32 @@ class level0 extends Phaser.Scene{
 
 		//this.image = this.add.image(400, 300, 'player');
 
-		this.platforms = this.physics.add.staticGroup();
-		this.items = this.physics.add.group();
-		//this.physics.world.enable(this.platforms);
-		//this.platforms.enableBody();
-		//this.plat	forms.body.immovable = true;
-
-		this.makePlatform(50, 536, 2);
-
-		this.makePlatform(400,450, 2);
-
-		this.makePlatform(25, 350);
-
-		for(let i = 0; i < 12; i++){
-			this.makeItem(i * 70, 0);
-		}
+		this.createLevelLayout();
 		
-		this.player = this.add.sprite(32, 400, 'player');
-		this.physics.world.enableBody(this.player);
-		this.player.body.bounce.y = 0.2;
-		this.player.body.gravity.y = 800;
-		//this.player.body.collideWorldBounds = true;
-		this.player.body.syncBounds = true;
-		this.player.scale = 0.2;
-		//this.player.refreshBody();
-		this.anims.create({
-			key: 'run', 
-			repeat: -1,
-			frames: this.anims.generateFrameNames('player', {start: 0, end: 38})
-		});
-		this.player.play('run');//Player's starting animation
+		this.createPlayer();
 
 		this.cursors = this.input.keyboard.createCursorKeys();
+
+		this.cameras.main.setLerp(0.9, 0.5);
+		this.cameras.main.setDeadzone(0.1, this.cameras.main.height / 2);
+		this.cameras.main.startFollow(this.player);
 	}
 
 	update(time, delta){
+		this.updateCollisions();
+		//this.physics.world.collide()
+		this.UpdateCameraAndUI();
+
+		this.updateInput();
+	}
+
+	updateCollisions(){
 		this.physics.world.collide(this.player, this.platforms);
 		this.physics.world.collide(this.platforms, this.items);
 		this.physics.world.collide(this.player, this.items, this.collectItem, null, this);
-		//this.physics.world.collide()
+	}
 
+	updateInput(){
 		this.player.body.velocity.x = 0;
 		if(this.cursors.left.isDown){
 			this.player.body.velocity.x = -150;
@@ -103,19 +89,61 @@ class level0 extends Phaser.Scene{
 		//else if(this.cursors.up.isDown == false && this.player.body.touching.down == false){
 		//	this.player.body.velocity.y = 300;
 		//}
-		this.UpdateCameraAndUI();
 	}
 
 	UpdateCameraAndUI(){
-		let xDelta = this.cameras.main.scrollX;
-		this.cameras.main.centerOnX(this.player.x);
-		xDelta -= this.cameras.main.scrollX;
-		if(xDelta == 0)
-			return;
-		this.collectItemUI.x -= xDelta;
-		this.collectItemUIAmount.x -= xDelta;
-		this.RecipeUI.x -= xDelta;
-		this.itemIngredient.x -= xDelta;
+		//Update X
+		let xAnchor = this.cameras.main.scrollX;// - (this.cameras.main.width / 2);
+		//this.cameras.main.centerOnX(this.player.x);
+		this.collectItemUI.x = xAnchor;
+		this.collectItemUIAmount.x = xAnchor;
+		this.RecipeUI.x = xAnchor + this.cameras.main.width - 300;
+		this.itemIngredient.x = xAnchor + this.cameras.main.width - 300;
+
+		//Update Y
+		let yAnchor = this.cameras.main.scrollY;// - (this.cameras.main.height / 2);
+		//this.cameras.main.centerOnX(this.player.x);
+		this.collectItemUI.y = yAnchor;
+		this.collectItemUIAmount.y = yAnchor + 15;
+		this.RecipeUI.y = yAnchor;
+		this.itemIngredient.y = yAnchor + 20;
+	}
+
+	createLevelLayout(){
+		this.platforms = this.physics.add.staticGroup();
+		this.items = this.physics.add.group();
+		//this.physics.world.enable(this.platforms);
+		//this.platforms.enableBody();
+		//this.plat	forms.body.immovable = true;
+
+		this.makePlatform(50, 536, 2);
+
+		this.makePlatform(400,450, 2);
+
+		this.makePlatform(25, 350);
+
+		this.makePlatform(50, 650, 4);
+
+		for(let i = 0; i < 12; i++){
+			this.makeItem(i * 70, 0);
+		}
+	}
+
+	createPlayer(){
+		this.player = this.add.sprite(32, 400, 'player');
+		this.physics.world.enableBody(this.player);
+		this.player.body.bounce.y = 0.2;
+		this.player.body.gravity.y = 800;
+		//this.player.body.collideWorldBounds = true;
+		this.player.body.syncBounds = true;
+		this.player.scale = 0.2;
+		//this.player.refreshBody();
+		this.anims.create({
+			key: 'run', 
+			repeat: -1,
+			frames: this.anims.generateFrameNames('player', {start: 0, end: 38})
+		});
+		this.player.play('run');//Player's starting animation
 	}
 
 	createUIVariables() {
@@ -166,7 +194,7 @@ class level0 extends Phaser.Scene{
             this.collectItemUI.setVisible(false);
             this.collectItemUIAmount.setVisible(false);   
         }
-		let xAnchor = this.player.x - (this.cameras.main.width / 2);
+		let xAnchor = this.cameras.main.centerX - (this.cameras.main.width / 2);
         this.collectItemUI = this.add.text(xAnchor,0,"You Collected An Item!");
         this.collectItemUI.setVisible(true);
         this.collectItemUIAmount = this.add.text(xAnchor,15,this.itemsCollected + "/" + this.itemsLefttoCollect);
