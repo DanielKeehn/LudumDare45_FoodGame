@@ -15,6 +15,10 @@ class level1 extends Phaser.Scene{
         //These are ints saying how many items a player need and how many they have collected
         var itemsLefttoCollect;
         var itemsCollected;
+
+        //These are variables dealing with UI That Display the Recipe
+        var RecipeUI;
+        var itemIngredient;
 	}
 
 	preload(){
@@ -25,7 +29,8 @@ class level1 extends Phaser.Scene{
 
 	create(){
 
-        this.createUIVariables();        
+        this.createUIVariables();
+        this.createRecipeUI();        
 
         //this.image = this.add.image(400, 300, 'player');
 
@@ -86,6 +91,11 @@ class level1 extends Phaser.Scene{
         this.collectItemUIAmount = this.add.text(0,15,this.itemsCollected + "/" + this.itemsLefttoCollect);
         this.collectItemUI.setVisible(false);
         this.collectItemUIAmount.setVisible(false);
+    }
+
+    createRecipeUI() {
+        this.RecipeUI = this.add.text(585,0,"Recipe: Name of Desert");
+        this.itemIngredient = this.add.text(585,20,"x12 Rectangles");
     }
 
 	makePlatform(x, y, width = 1){
