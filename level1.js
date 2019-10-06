@@ -25,14 +25,7 @@ class level1 extends Phaser.Scene{
 
 	create(){
 
-        this.itemsLefttoCollect = 12;
-        this.itemsCollected = 0;
-        this.collectItemVisible = false;
-        
-        this.collectItemUI = this.add.text(0,0,"You Collected An Item!");
-        this.collectItemUIAmount = this.add.text(0,15,this.itemsCollected + "/" + this.itemsLefttoCollect);
-        this.collectItemUI.setVisible(false);
-        this.collectItemUIAmount.setVisible(false);
+        this.createUIVariables();        
 
         //this.image = this.add.image(400, 300, 'player');
 
@@ -82,7 +75,18 @@ class level1 extends Phaser.Scene{
 		//else if(this.cursors.up.isDown == false && this.player.body.touching.down == false){
 		//	this.player.body.velocity.y = 300;
 		//}
-	}
+    }
+    
+    createUIVariables() {
+        this.itemsLefttoCollect = 12;
+        this.itemsCollected = 0;
+        this.collectItemVisible = false;
+        
+        this.collectItemUI = this.add.text(0,0,"You Collected An Item!");
+        this.collectItemUIAmount = this.add.text(0,15,this.itemsCollected + "/" + this.itemsLefttoCollect);
+        this.collectItemUI.setVisible(false);
+        this.collectItemUIAmount.setVisible(false);
+    }
 
 	makePlatform(x, y, width = 1){
 		let ground = this.platforms.create(x, y, 'platform');
