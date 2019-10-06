@@ -150,7 +150,7 @@ class level1 extends Phaser.Scene{
 		item.destroy();
 		this.itemsCollected++;
         this.collectItemVisible = true;
-        this.amountofItemCollectedUI(player, item);
+		this.amountofItemCollectedUI(player, item);
 	}
 
 	//This function runs everytime an item is collected. It shows up momentarily of the center top of a screen
@@ -171,6 +171,10 @@ class level1 extends Phaser.Scene{
     //This allows for the UI to stay on the screen for a small amount of time but eventually disaapear
     sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
-    }
+	}
+	
+	restart(){
+		this.scene.restart();
+	}
 
 }
