@@ -7,14 +7,14 @@ class level1 extends Phaser.Scene{
 		this.player;
 		this.cursors;
 
-		//These variables are text that show up when item is collected
-        var collectItemUI;
-        var collectItemUIAmount;
-        var collectItemVisible;
+		// //These variables are text that show up when item is collected
+        // var collectItemUI;
+        // var collectItemUIAmount;
+        // var collectItemVisible;
 
-        //These are ints saying how many items a player need and how many they have collected
-        var itemsLefttoCollect;
-        var itemsCollected;
+        // //These are ints saying how many items a player need and how many they have collected
+        // var itemsLefttoCollect;
+        // var itemsCollected;
 
         //This are the variables that must be changed every level, it is the recipe ingredients and name
         var recipe = eggsRecipe;
@@ -40,10 +40,10 @@ class level1 extends Phaser.Scene{
 
 	//Runs when scene first is made only once
 	create(){
-        this.createUIVariables();
+        //this.createUIVariables();
 		this.createRecipeUI(eggsRecipe, eggsRecipeName); //Make sure the paramters change for every level
 		this.platforms = this.physics.add.staticGroup();
-		this.items = this.physics.add.group();
+		this.ingredients = this.physics.add.group();
 		
 		//Spawns all teh ingredients and platforms
 		this.spawnPlatformns();
@@ -61,17 +61,17 @@ class level1 extends Phaser.Scene{
 		this.updatePlayerPos();
 	}
 
-	//These variables deal with when a player collects an ingredient
-	createUIVariables() {
-        this.itemsLefttoCollect = 12;
-        this.itemsCollected = 0;
-        this.collectItemVisible = false;
+	// //These variables deal with when a player collects an ingredient
+	// createUIVariables() {
+    //     this.itemsLefttoCollect = 12;
+    //     this.itemsCollected = 0;
+    //     this.collectItemVisible = false;
         
-        this.collectItemUI = this.add.text(0,0,"You Collected An Item!");
-        this.collectItemUIAmount = this.add.text(0,15,this.itemsCollected + "/" + this.itemsLefttoCollect);
-        this.collectItemUI.setVisible(false);
-        this.collectItemUIAmount.setVisible(false);
-    }
+    //     this.collectItemUI = this.add.text(0,0,"You Collected An Item!");
+    //     this.collectItemUIAmount = this.add.text(0,15,this.itemsCollected + "/" + this.itemsLefttoCollect);
+    //     this.collectItemUI.setVisible(false);
+    //     this.collectItemUIAmount.setVisible(false);
+    // }
 
 	//This creates the UI on the top right of the screen, so the player knows how much of an item they need to collect
     createRecipeUI(recipe, name) {
@@ -80,7 +80,6 @@ class level1 extends Phaser.Scene{
         for (let i = 0; i < recipe.length; i++) {
             yPos += 20
             for (let [key, value] of Object.entries(recipe[i])) {
-                console.log(`${key}: ${value}`);
                 this.text = this.add.text(585,yPos,key + ": x" + value);
               }
         } 
@@ -140,8 +139,8 @@ class level1 extends Phaser.Scene{
 	//This runs every frame to check physics values
 	updatePhysics() {
 		this.physics.world.collide(this.player, this.platforms);
-		this.physics.world.collide(this.platforms, this.items);
-		this.physics.world.collide(this.player, this.items, this.collectItem, null, this);
+		this.physics.world.collide(this.platforms, this.ingredients);
+		this.physics.world.collide(this.player, this.ingredients, this.collectIngredient, null, this);
 	}
 
 	//This is how to spawn a platform into a scene
@@ -154,34 +153,35 @@ class level1 extends Phaser.Scene{
 
 	//This is how to make spawn an ingredient into a scene
 	makeIngredient(x, y, ingredientVariable){
-		let item = this.items.create(x, y, 'item');
-		this.physics.world.enable(item);
-		item.body.gravity.y = 1000;
-		item.body.bounce.y = 0.3 + Math.random() * 0.2;
+		let ingredient = this.ingredients.create(x, y, ingredientVariable["image"]);
+		this.physics.world.enable(ingredient);
+		ingredient.body.gravity.y = 1000;
+		ingredient.body.bounce.y = 0.3 + Math.random() * 0.2;
 	}
 
-	//This method is called when the player collides with an Item
-	collectItem(player, item){
+	//This method is called when the player collides with an Ingredient
+	collectIngredient(player, item){
 		item.destroy();
-		this.itemsCollected++;
-        this.collectItemVisible = true;
-		this.amountofItemCollectedUI(player, item);
+		console.log(item);
+		// this.itemsCollected++;
+        // this.collectItemVisible = true;
+		//this.amountofItemCollectedUI(player, item);
 	}
 
 	//This function runs everytime an item is collected. It shows up momentarily of the center top of a screen
-    async amountofItemCollectedUI(player, item) {
-        if (this.collectItemVisible == true) {
-            this.collectItemUI.setVisible(false);
-            this.collectItemUIAmount.setVisible(false);   
-        }
-        this.collectItemUI = this.add.text(0,0,"You Collected An Item!");
-        this.collectItemUI.setVisible(true);
-        this.collectItemUIAmount = this.add.text(0,15,this.itemsCollected + "/" + this.itemsLefttoCollect);
-        await this.sleep(2000);
-        this.collectItemVisible = false;
-        this.collectItemUI.setVisible(false);
-        this.collectItemUIAmount.setVisible(false);
-    }
+    // async amountofItemCollectedUI(player, item) {
+    //     if (this.collectItemVisible == true) {
+    //         this.collectItemUI.setVisible(false);
+    //         this.collectItemUIAmount.setVisible(false);   
+    //     }
+    //     this.collectItemUI = this.add.text(0,0,"You Collected An Item!");
+    //     this.collectItemUI.setVisible(true);
+    //     this.collectItemUIAmount = this.add.text(0,15,this.itemsCollected + "/" + this.itemsLefttoCollect);
+    //     await this.sleep(2000);
+    //     this.collectItemVisible = false;
+    //     this.collectItemUI.setVisible(false);
+    //     this.collectItemUIAmount.setVisible(false);
+    // }
 
     //This allows for the UI to stay on the screen for a small amount of time but eventually disaapear
     sleep(ms) {
