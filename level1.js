@@ -5,9 +5,9 @@ class level1 extends Phaser.Scene{
 		this.platforms;
 		this.items;
 		this.player;
-        this.cursors;
+		this.cursors;
 
-        //These variables are text that show up when item is collected
+		//These variables are text that show up when item is collected
         var collectItemUI;
         var collectItemUIAmount;
         var collectItemVisible;
@@ -16,23 +16,32 @@ class level1 extends Phaser.Scene{
         var itemsLefttoCollect;
         var itemsCollected;
 
-        //These are variables dealing with UI That Display the Recipe
-        var RecipeUI;
-        var itemIngredient;
+        //This are the variables that must be changed every level, it is the recipe ingredients and name
+        var recipe = eggsRecipe;
+        var recipeName = eggsRecipeName;
 	}
 
 	preload(){
-		this.load.image('player', 'Resources/white.png');
+		this.load.spritesheet({
+		key: 'player', 
+		url: 'Resources/mouse_run.png', 
+		frameConfig:{
+			frameWidth: 650, 
+			frameHeight: 200,
+			startFrame: 0,
+			endFrame: 38
+			}
+		});
 		this.load.image('platform', 'Resources/blue.png');
 		this.load.image('item', 'Resources/yellow.png');
 	}
 
 	create(){
-
         this.createUIVariables();
-        this.createRecipeUI();        
+        //Male sure this changes every level
+        this.createRecipeUI(eggsRecipe, eggsRecipeName);
 
-        //this.image = this.add.image(400, 300, 'player');
+		//this.image = this.add.image(400, 300, 'player');
 
 		this.platforms = this.physics.add.staticGroup();
 		this.items = this.physics.add.group();
@@ -46,17 +55,25 @@ class level1 extends Phaser.Scene{
 
 		this.makePlatform(25, 350);
 
-		for(let i = 0; i < 12; i++){
-			this.makeItem(i * 70, 0);
-		}
+		this.makeItem(70, 0);
+        this.makeItem(300, 3);
 		
-		this.player = this.add.sprite(32, 450, 'player');
+		this.player = this.add.sprite(32, 400, 'player');
 		this.physics.world.enableBody(this.player);
 		this.player.body.bounce.y = 0.2;
 		this.player.body.gravity.y = 800;
 		//this.player.body.collideWorldBounds = true;
+		this.player.body.syncBounds = true;
+		this.player.scale = 0.2;
+		//this.player.refreshBody();
+		this.anims.create({
+			key: 'run', 
+			repeat: -1,
+			frames: this.anims.generateFrameNames('player', {start: 0, end: 38})
+		});
+		this.player.play('run');//Player's starting animation
 
-        this.cursors = this.input.keyboard.createCursorKeys();
+		this.cursors = this.input.keyboard.createCursorKeys();
 	}
 
 	update(time, delta){
@@ -68,11 +85,17 @@ class level1 extends Phaser.Scene{
 		this.player.body.velocity.x = 0;
 		if(this.cursors.left.isDown){
 			this.player.body.velocity.x = -150;
-			//player.animations.play('left');
+			if(this.player.flipX == false){
+				this.player.play('run');
+				this.player.flipX = true;
+			}
 		}
 		else if(this.cursors.right.isDown){
 			this.player.body.velocity.x = 150;
-			//player.animations.play('right');
+			if(this.player.flipX == true){
+				this.player.play('run');
+				this.player.flipX = false;
+			}
 		}
 		if(this.cursors.up.isDown && this.player.body.touching.down){
 			this.player.body.velocity.y = -600;
@@ -80,9 +103,9 @@ class level1 extends Phaser.Scene{
 		//else if(this.cursors.up.isDown == false && this.player.body.touching.down == false){
 		//	this.player.body.velocity.y = 300;
 		//}
-    }
-    
-    createUIVariables() {
+	}
+
+	createUIVariables() {
         this.itemsLefttoCollect = 12;
         this.itemsCollected = 0;
         this.collectItemVisible = false;
@@ -93,9 +116,16 @@ class level1 extends Phaser.Scene{
         this.collectItemUIAmount.setVisible(false);
     }
 
-    createRecipeUI() {
-        this.RecipeUI = this.add.text(585,0, "Recipe: Name of Desert");
-        this.itemIngredient = this.add.text(585,20,"x12 Rectangles");
+    createRecipeUI(recipe, name) {
+        let yPos = 0;
+        this.text = this.add.text(585,yPos,"Recipe: " + name);
+        for (let i = 0; i < recipe.length; i++) {
+            yPos += 20
+            for (let [key, value] of Object.entries(recipe[i])) {
+                console.log(`${key}: ${value}`);
+                this.text = this.add.text(585,yPos,key + ": x" + value);
+              }
+        } 
     }
 
 	makePlatform(x, y, width = 1){
@@ -115,15 +145,15 @@ class level1 extends Phaser.Scene{
 		//item.body.collideWorldBounds = true;
 	}
 
+	//This method is called when the player collides with an Item
 	collectItem(player, item){
-        item.destroy();
-        this.itemsCollected++;
+		item.destroy();
+		this.itemsCollected++;
         this.collectItemVisible = true;
         this.amountofItemCollectedUI(player, item);
-    }
-    
+	}
 
-    //This function runs everytime an item is collected. It shows up momentarily of the center top of a screen
+	//This function runs everytime an item is collected. It shows up momentarily of the center top of a screen
     async amountofItemCollectedUI(player, item) {
         if (this.collectItemVisible == true) {
             this.collectItemUI.setVisible(false);
@@ -141,5 +171,6 @@ class level1 extends Phaser.Scene{
     //This allows for the UI to stay on the screen for a small amount of time but eventually disaapear
     sleep(ms) {
         return new Promise(resolve => setTimeout(resolve, ms));
-      }
+    }
+
 }

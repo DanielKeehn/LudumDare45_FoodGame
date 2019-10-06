@@ -1,6 +1,7 @@
 //This file organizes all the recipies in structs
 
 var eggsRecipe = [{"Egg": 2}];
+var eggsRecipeName = "Eggs";    
 var chocolateStrawberriesRecipe = [{"Chocolate": 3}, {"Strawberry": 3}];
 var cookiesRecipe = [{"Sugar": 3}, {"Flour": 1}, {"Milk": 2}, {"Egg": 2}];
 var browniesRecipe = [{"Sugar": 4}, {"Flour": 2}, {"Milk": 4}, {"Egg": 4}, {"Chocolate": 6}];

@@ -2,7 +2,7 @@
 
 var eggPrefab = {
     "name" : "Egg",
-    "image" : "NOT YET IMPLEMENTED"
+    "image" : "item"
 };
 
 var milkPrefab = {
