@@ -44,20 +44,14 @@ class level1 extends Phaser.Scene{
 		this.createRecipeUI(eggsRecipe, eggsRecipeName); //Make sure the paramters change for every level
 		this.platforms = this.physics.add.staticGroup();
 		this.items = this.physics.add.group();
+		
+		//Spawns all teh ingredients and platforms
 		this.spawnPlatformns();
 		this.spawnIngredients();
-		this.player = this.add.sprite(32, 400, 'player');
-		this.physics.world.enableBody(this.player);
-		this.player.body.bounce.y = 0.2;
-		this.player.body.gravity.y = 800;
-		this.player.body.syncBounds = true;
-		this.player.scale = 0.2;
-		this.anims.create({
-			key: 'run', 
-			repeat: -1,
-			frames: this.anims.generateFrameNames('player', {start: 0, end: 38})
-		});
-		this.player.play('run');//Player's starting animation
+		
+		//This creates the player
+		this.createPlayer();
+		
 		this.cursors = this.input.keyboard.createCursorKeys();
 	}
 
@@ -90,6 +84,22 @@ class level1 extends Phaser.Scene{
                 this.text = this.add.text(585,yPos,key + ": x" + value);
               }
         } 
+	}
+
+	//This creates the player sprite, animation, and gives the player physics
+	createPlayer() {
+		this.player = this.add.sprite(32, 400, 'player');
+		this.physics.world.enableBody(this.player);
+		this.player.body.bounce.y = 0.2;
+		this.player.body.gravity.y = 800;
+		this.player.body.syncBounds = true;
+		this.player.scale = 0.2;
+		this.anims.create({
+			key: 'run', 
+			repeat: -1,
+			frames: this.anims.generateFrameNames('player', {start: 0, end: 38})
+		});
+		this.player.play('run');//Player's starting animation
 	}
 
 	//This method is diferent for every scene, but creates all the ingredients in a scene
