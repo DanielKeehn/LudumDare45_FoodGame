@@ -157,6 +157,7 @@ class level1 extends Phaser.Scene{
 		this.physics.world.enable(ingredient);
 		ingredient.body.gravity.y = 1000;
 		ingredient.body.bounce.y = 0.3 + Math.random() * 0.2;
+		ingredient.name = ingredientVariable["name"];
 	}
 
 	//This method is called when the player collides with an Ingredient
