@@ -42,18 +42,11 @@ class level1 extends Phaser.Scene{
         //Male sure this changes every level
 		this.createRecipeUI(eggsRecipe, eggsRecipeName);
 
-		//this.image = this.add.image(400, 300, 'player');
-
 		this.platforms = this.physics.add.staticGroup();
 		this.items = this.physics.add.group();
-		//this.physics.world.enable(this.platforms);
-		//this.platforms.enableBody();
-		//this.plat	forms.body.immovable = true;
 
 		this.makePlatform(50, 536, 2);
-
 		this.makePlatform(400,450, 2);
-
 		this.makePlatform(25, 350);
 
 		this.makeItem(70, 0);
@@ -63,10 +56,8 @@ class level1 extends Phaser.Scene{
 		this.physics.world.enableBody(this.player);
 		this.player.body.bounce.y = 0.2;
 		this.player.body.gravity.y = 800;
-		//this.player.body.collideWorldBounds = true;
 		this.player.body.syncBounds = true;
 		this.player.scale = 0.2;
-		//this.player.refreshBody();
 		this.anims.create({
 			key: 'run', 
 			repeat: -1,
@@ -78,32 +69,8 @@ class level1 extends Phaser.Scene{
 	}
 
 	update(time, delta){
-		this.physics.world.collide(this.player, this.platforms);
-		this.physics.world.collide(this.platforms, this.items);
-		this.physics.world.collide(this.player, this.items, this.collectItem, null, this);
-		//this.physics.world.collide()
-
-		this.player.body.velocity.x = 0;
-		if(this.cursors.left.isDown){
-			this.player.body.velocity.x = -150;
-			if(this.player.flipX == false){
-				this.player.play('run');
-				this.player.flipX = true;
-			}
-		}
-		else if(this.cursors.right.isDown){
-			this.player.body.velocity.x = 150;
-			if(this.player.flipX == true){
-				this.player.play('run');
-				this.player.flipX = false;
-			}
-		}
-		if(this.cursors.up.isDown && this.player.body.touching.down){
-			this.player.body.velocity.y = -600;
-		}
-		//else if(this.cursors.up.isDown == false && this.player.body.touching.down == false){
-		//	this.player.body.velocity.y = 300;
-		//}
+		this.updatePhysics();
+		this.updatePlayerPos();
 	}
 
 	createUIVariables() {
@@ -127,12 +94,39 @@ class level1 extends Phaser.Scene{
                 this.text = this.add.text(585,yPos,key + ": x" + value);
               }
         } 
-    }
+	}
+	
+	//This runs every frame to update the players position (takes in user input)
+	updatePlayerPos() {
+		this.player.body.velocity.x = 0;
+		if(this.cursors.left.isDown){
+			this.player.body.velocity.x = -150;
+			if(this.player.flipX == false){
+				this.player.play('run');
+				this.player.flipX = true;
+			}
+		}
+		else if(this.cursors.right.isDown){
+			this.player.body.velocity.x = 150;
+			if(this.player.flipX == true){
+				this.player.play('run');
+				this.player.flipX = false;
+			}
+		}
+		if(this.cursors.up.isDown && this.player.body.touching.down){
+			this.player.body.velocity.y = -600;
+		}
+	}
+
+	//This runs every frame to check physics values
+	updatePhysics() {
+		this.physics.world.collide(this.player, this.platforms);
+		this.physics.world.collide(this.platforms, this.items);
+		this.physics.world.collide(this.player, this.items, this.collectItem, null, this);
+	}
 
 	makePlatform(x, y, width = 1){
 		let ground = this.platforms.create(x, y, 'platform');
-		//ground.enableBody(false, 0, 0, true, true);
-		//this.physics.world.enable(ground);
 		ground.scaleX = width;
 		ground.body.immovable = true;
 		ground.refreshBody();
@@ -143,7 +137,6 @@ class level1 extends Phaser.Scene{
 		this.physics.world.enable(item);
 		item.body.gravity.y = 1000;
 		item.body.bounce.y = 0.3 + Math.random() * 0.2;
-		//item.body.collideWorldBounds = true;
 	}
 
 	//This method is called when the player collides with an Item
