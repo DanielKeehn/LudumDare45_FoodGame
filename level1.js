@@ -49,8 +49,7 @@ class level1 extends Phaser.Scene{
 		this.makePlatform(400,450, 2);
 		this.makePlatform(25, 350);
 
-		this.makeItem(70, 0);
-        this.makeItem(300, 3);
+		this.spawnIngredients();
 		
 		this.player = this.add.sprite(32, 400, 'player');
 		this.physics.world.enableBody(this.player);
@@ -95,6 +94,12 @@ class level1 extends Phaser.Scene{
               }
         } 
 	}
+
+	//This method is diferent for every scene, but creates all the ingredients in a scene
+	spawnIngredients() {
+		this.makeIngredient(70, 0, eggPrefab);
+        this.makeIngredient(300, 40, eggPrefab);
+	}
 	
 	//This runs every frame to update the players position (takes in user input)
 	updatePlayerPos() {
@@ -125,6 +130,7 @@ class level1 extends Phaser.Scene{
 		this.physics.world.collide(this.player, this.items, this.collectItem, null, this);
 	}
 
+	//This is how to spawn a platform into a scene
 	makePlatform(x, y, width = 1){
 		let ground = this.platforms.create(x, y, 'platform');
 		ground.scaleX = width;
@@ -132,7 +138,8 @@ class level1 extends Phaser.Scene{
 		ground.refreshBody();
 	}
 
-	makeItem(x, y){
+	//This is how to make spawn an ingredient into a scene
+	makeIngredient(x, y, ingredientVariable){
 		let item = this.items.create(x, y, 'item');
 		this.physics.world.enable(item);
 		item.body.gravity.y = 1000;
