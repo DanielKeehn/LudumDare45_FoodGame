@@ -6,6 +6,7 @@ class level1 extends Phaser.Scene{
 		this.items;
 		this.player;
 		this.cursors;
+		this.firetraps;
 		
 		//Checks if UI When You Collect an Item is Showing or not
 		this.collectItemUIVisible = false;
@@ -16,6 +17,8 @@ class level1 extends Phaser.Scene{
         this.recipe = eggsRecipe;
 		this.recipeName = eggsRecipeName;
 		this.ingredientsCollected = eggsRecipePlayer;
+		this.recipeUI;
+		this.ingredient1;
 	}
 
 	//Runs before create
@@ -30,7 +33,19 @@ class level1 extends Phaser.Scene{
 			endFrame: 38
 			}
 		});
-		this.load.image('platform', 'Resources/blue.png');
+		this.load.spritesheet({
+			key: 'fire',
+			url: 'Resources/firetrap.png',
+			frameConfig:{
+				frameWidth: 527,
+				frameHeight: 583,
+				startFrame: 0,
+				endFrame: 53
+			}
+		});
+		this.load.image('background', 'Resources/Background.png');
+		this.load.image('shelf', 'Resources/BasicPlatform.png');
+		this.load.image('platform', 'Resources/Floor.png');
 		this.load.image('item', 'Resources/yellow.png');
 	}
 
@@ -38,13 +53,23 @@ class level1 extends Phaser.Scene{
 	create(){
 		this.collectItemUI = this.add.text(0,0,"");
 		this.collectItemUIAmount = this.add.text(0,0,"");
-	
+		this.recipeUI = this.add.text(0,0,"");
+		this.ingredient1 = this.add.text(0,0,"");
+		this.createRecipeUI();
+		
+		this.add.tileSprite(0, 600, 800, 600, 'background');
+		this.anims.create({
+			key: 'flame', 
+			frames: this.anims.generateFrameNames('fire', {start: 0, end: 53})
+		});
+		
 
-		this.createRecipeUI(this.recipe, this.recipeName); 
+
 		this.platforms = this.physics.add.staticGroup();
+		this.firetraps = this.physics.add.staticGroup();
 		this.ingredients = this.physics.add.group();
 		
-		//Spawns all teh ingredients and platforms
+		//Spawns all the ingredients and platforms
 		this.spawnPlatformns();
 		this.spawnIngredients();
 		
@@ -52,22 +77,30 @@ class level1 extends Phaser.Scene{
 		this.createPlayer();
 		
 		this.cursors = this.input.keyboard.createCursorKeys();
+
+		this.makeFlameTrap(400, 400, 5000);
+
+		this.cameras.main.setLerp(0.9, 0.5);
+		this.cameras.main.setDeadzone(0.1, this.cameras.main.height / 2);
+		this.cameras.main.startFollow(this.player);
 	}
 
 	//Runs every frame
 	update(time, delta){
 		this.updatePhysics();
 		this.updatePlayerPos();
+		this.UpdateCameraAndUI();
+		this.updatePhysics();
 	}
 
 	//This creates the UI on the top right of the screen, so the player knows how much of an item they need to collect
-    createRecipeUI(recipe, name) {
-        let yPos = 0;
-        this.text = this.add.text(585,yPos,"Recipe: " + name);
-        for (let i = 0; i < recipe.length; i++) {
+    createRecipeUI() {
+        let yPos = 20;
+        this.recipeUI = this.add.text(700,yPos,"Recipe: " + this.recipeName);
+        for (let i = 0; i < this.recipe.length; i++) {
             yPos += 20
-            for (let [key, value] of Object.entries(recipe[i])) {
-                this.text = this.add.text(585,yPos,key + ": x" + value);
+            for (let [key, value] of Object.entries(this.recipe[i])) {
+                this.ingredient1 = this.add.text(700,yPos,key + ": x" + value);
               }
         } 
 	}
@@ -99,6 +132,7 @@ class level1 extends Phaser.Scene{
 		this.makePlatform(50, 536, 2);
 		this.makePlatform(400,450, 2);
 		this.makePlatform(25, 350);
+		this.makePlatform(100, 650, 4);
 	}
 	
 	//This runs every frame to update the players position (takes in user input)
@@ -130,10 +164,42 @@ class level1 extends Phaser.Scene{
 		this.physics.world.collide(this.player, this.ingredients, this.collectIngredient, null, this);
 	}
 
+	updateFlameTrap(){
+		let set = this.firetraps.children.getArray();
+		for(let i = 0; i < set.length; i++){
+			let fire = set[i];
+			if(fire.anims.isPlaying){
+				this.physics.world.collide(this.player, fire, this.killPlayer, null, this);
+			}
+		}
+	}
+
+	UpdateCameraAndUI(){
+		//Update X
+		let xAnchor = this.cameras.main.scrollX;// - (this.cameras.main.width / 2);
+		this.cameras.main.centerOnX(this.player.x);
+		this.collectItemUI.x = xAnchor;
+		this.collectItemUIAmount.x = xAnchor;
+		this.recipeUI.x = xAnchor + this.cameras.main.width - 300;
+		this.ingredient1.x = xAnchor + this.cameras.main.width - 300;
+		//this.itemIngredient.x = xAnchor + this.cameras.main.width - 300;
+
+		//Update Y
+		let yAnchor = this.cameras.main.scrollY;// - (this.cameras.main.height / 2);
+		this.cameras.main.centerOnX(this.player.x);
+		this.collectItemUI.y = yAnchor;
+		this.collectItemUIAmount.y = yAnchor + 15;
+		this.recipeUI.y = yAnchor;
+		this.ingredient1.y = yAnchor + 15;
+		//this.itemIngredient.y = yAnchor + 20;
+	}
+
+
 	//This is how to spawn a platform into a scene
 	makePlatform(x, y, width = 1){
 		let ground = this.platforms.create(x, y, 'platform');
-		ground.scaleX = width;
+		ground.scale = 0.3;
+		ground.scaleX *= width;
 		ground.body.immovable = true;
 		ground.refreshBody();
 	}
@@ -197,5 +263,25 @@ class level1 extends Phaser.Scene{
 	//Call this when you do not get the right amount of items or die
 	restart(){
 		this.scene.restart();
+	}
+
+	makeFlameTrap(x, y, delay){
+		let trap = this.firetraps.create(x, y, 'fire');
+		trap.scale = 0.2;
+		trap.body.immovable = true;
+		trap.refreshBody();
+		this.sleep(delay);
+		this.playFlameTrap(trap);
+		this.time.addEvent({
+			delay: delay,
+			callback: this.playFlameTrap,
+			args: [trap],
+			callbackScope: this,
+			repeat: Infinity
+		});
+	}
+
+	playFlameTrap(trap){
+		trap.play('flame');
 	}
 }
