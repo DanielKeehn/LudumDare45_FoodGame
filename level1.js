@@ -91,6 +91,7 @@ class level1 extends Phaser.Scene{
 		this.updatePlayerPos();
 		this.UpdateCameraAndUI();
 		this.updatePhysics();
+		this.updateFlameTrap();
 	}
 
 	//This creates the UI on the top right of the screen, so the player knows how much of an item they need to collect
@@ -283,5 +284,11 @@ class level1 extends Phaser.Scene{
 
 	playFlameTrap(trap){
 		trap.play('flame');
+	}
+
+	killPlayer(){
+		//this.player.destroy();
+		//this.sleep(2000);
+		this.scene.restart();
 	}
 }
