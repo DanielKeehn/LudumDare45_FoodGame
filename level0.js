@@ -9,7 +9,16 @@ class level0 extends Phaser.Scene{
 	}
 
 	preload(){
-		this.load.image('player', 'Resources/white.png');
+		this.load.spritesheet({
+		key: 'player', 
+		url: 'Resources/mouse_run.png', 
+		frameConfig:{
+			frameWidth: 700, 
+			frameHeight: 300,
+			startFrame: 0,
+			endFrame: 38
+			}
+		});
 		this.load.image('platform', 'Resources/blue.png');
 		this.load.image('item', 'Resources/yellow.png');
 	}
@@ -33,11 +42,20 @@ class level0 extends Phaser.Scene{
 			this.makeItem(i * 70, 0);
 		}
 		
-		this.player = this.add.sprite(32, 450, 'player');
+		this.player = this.add.sprite(32, 400, 'player');
 		this.physics.world.enableBody(this.player);
 		this.player.body.bounce.y = 0.2;
 		this.player.body.gravity.y = 800;
 		//this.player.body.collideWorldBounds = true;
+		this.player.body.syncBounds = true;
+		this.player.scale = 0.2;
+		//this.player.refreshBody();
+		this.anims.create({
+			key: 'run', 
+			repeat: -1,
+			frames: this.anims.generateFrameNames('player', {start: 0, end: 38})
+		});
+		this.player.play('run');//Player's starting animation
 
 		this.cursors = this.input.keyboard.createCursorKeys();
 	}
@@ -51,11 +69,17 @@ class level0 extends Phaser.Scene{
 		this.player.body.velocity.x = 0;
 		if(this.cursors.left.isDown){
 			this.player.body.velocity.x = -150;
-			//player.animations.play('left');
+			if(this.player.flipX == false){
+				this.player.play('run');
+				this.player.flipX = true;
+			}
 		}
 		else if(this.cursors.right.isDown){
 			this.player.body.velocity.x = 150;
-			//player.animations.play('right');
+			if(this.player.flipX == true){
+				this.player.play('run');
+				this.player.flipX = false;
+			}
 		}
 		if(this.cursors.up.isDown && this.player.body.touching.down){
 			this.player.body.velocity.y = -600;
@@ -82,6 +106,7 @@ class level0 extends Phaser.Scene{
 		//item.body.collideWorldBounds = true;
 	}
 
+	//This method is called when the player collides with an Item
 	collectItem(player, item){
 		item.destroy();
 	}
