@@ -6,20 +6,16 @@ class level1 extends Phaser.Scene{
 		this.items;
 		this.player;
 		this.cursors;
-
-		// //These variables are text that show up when item is collected
-        // var collectItemUI;
-        // var collectItemUIAmount;
-        // var collectItemVisible;
-
-        // //These are ints saying how many items a player need and how many they have collected
-        // var itemsLefttoCollect;
-        // var itemsCollected;
+		
+		//Checks if UI When You Collect an Item is Showing or not
+		this.collectItemUIVisible = false;
+		this.collectItemUI;
+		this.collectItemUIAmount; 
 
         //This are the variables that must be changed every level, it is the recipe ingredients and name
-        var recipe = eggsRecipe;
-		var recipeName = eggsRecipeName;
-		var playerIngredientsCollected = eggsRecipePlayer;
+        this.recipe = eggsRecipe;
+		this.recipeName = eggsRecipeName;
+		this.ingredientsCollected = eggsRecipePlayer;
 	}
 
 	//Runs before create
@@ -40,8 +36,11 @@ class level1 extends Phaser.Scene{
 
 	//Runs when scene first is made only once
 	create(){
-        //this.createUIVariables();
-		this.createRecipeUI(eggsRecipe, eggsRecipeName); //Make sure the paramters change for every level
+		this.collectItemUI = this.add.text(0,0,"");
+		this.collectItemUIAmount = this.add.text(0,0,"");
+	
+
+		this.createRecipeUI(this.recipe, this.recipeName); 
 		this.platforms = this.physics.add.staticGroup();
 		this.ingredients = this.physics.add.group();
 		
@@ -60,18 +59,6 @@ class level1 extends Phaser.Scene{
 		this.updatePhysics();
 		this.updatePlayerPos();
 	}
-
-	// //These variables deal with when a player collects an ingredient
-	// createUIVariables() {
-    //     this.itemsLefttoCollect = 12;
-    //     this.itemsCollected = 0;
-    //     this.collectItemVisible = false;
-        
-    //     this.collectItemUI = this.add.text(0,0,"You Collected An Item!");
-    //     this.collectItemUIAmount = this.add.text(0,15,this.itemsCollected + "/" + this.itemsLefttoCollect);
-    //     this.collectItemUI.setVisible(false);
-    //     this.collectItemUIAmount.setVisible(false);
-    // }
 
 	//This creates the UI on the top right of the screen, so the player knows how much of an item they need to collect
     createRecipeUI(recipe, name) {
@@ -163,26 +150,44 @@ class level1 extends Phaser.Scene{
 	//This method is called when the player collides with an Ingredient
 	collectIngredient(player, item){
 		item.destroy();
-		console.log(item);
-		// this.itemsCollected++;
-        // this.collectItemVisible = true;
-		//this.amountofItemCollectedUI(player, item);
+		let ingredientName = item.name;
+		let ingredientsAmount;
+		let ingredientsAmountPlayer;
+		this.collectItemVisible = true;
+		for (let i = 0; i < this.recipe.length; i++) {
+            for (let [key, value] of Object.entries(this.recipe[i])) {
+                if (key == ingredientName) {
+					ingredientsAmount = value;
+				}	
+              }
+		}
+		for (let i = 0; i < this.ingredientsCollected.length; i++) {
+            for (let [key, value] of Object.entries(this.ingredientsCollected[i])) {
+                if (key == ingredientName) {
+					value++;
+					ingredientsAmountPlayer = value;
+					this.ingredientsCollected[i][key] = value;
+				}
+              }
+		}
+		this.amountofIngredientCollectedUI(ingredientName, ingredientsAmount, ingredientsAmountPlayer);
 	}
 
 	//This function runs everytime an item is collected. It shows up momentarily of the center top of a screen
-    // async amountofItemCollectedUI(player, item) {
-    //     if (this.collectItemVisible == true) {
-    //         this.collectItemUI.setVisible(false);
-    //         this.collectItemUIAmount.setVisible(false);   
-    //     }
-    //     this.collectItemUI = this.add.text(0,0,"You Collected An Item!");
-    //     this.collectItemUI.setVisible(true);
-    //     this.collectItemUIAmount = this.add.text(0,15,this.itemsCollected + "/" + this.itemsLefttoCollect);
-    //     await this.sleep(2000);
-    //     this.collectItemVisible = false;
-    //     this.collectItemUI.setVisible(false);
-    //     this.collectItemUIAmount.setVisible(false);
-    // }
+    async amountofIngredientCollectedUI(name, amountForRecipe, amountPlayerHas) {
+        if (this.collectItemVisible == true) {
+            this.collectItemUI.setVisible(false);
+            this.collectItemUIAmount.setVisible(false);   
+        }
+        this.collectItemUI = this.add.text(0,0,"You Collected An " + name + "!");
+		this.collectItemUIAmount = this.add.text(0,15,amountPlayerHas + "/" + amountForRecipe);
+		this.collectItemUI.setVisible(true);
+		this.collectItemUIAmount.setVisible(true);
+        await this.sleep(2000);
+        this.collectItemVisible = false;
+        this.collectItemUI.setVisible(false);
+        this.collectItemUIAmount.setVisible(false);
+    }
 
     //This allows for the UI to stay on the screen for a small amount of time but eventually disaapear
     sleep(ms) {
