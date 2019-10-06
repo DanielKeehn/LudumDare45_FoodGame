@@ -30,7 +30,7 @@ class level0 extends Phaser.Scene{
 		this.items = this.physics.add.group();
 		//this.physics.world.enable(this.platforms);
 		//this.platforms.enableBody();
-		//this.platforms.body.immovable = true;
+		//this.plat	forms.body.immovable = true;
 
 		this.makePlatform(50, 536, 2);
 
