@@ -22,6 +22,7 @@ class level1 extends Phaser.Scene{
 		var playerIngredientsCollected = eggsRecipePlayer;
 	}
 
+	//Runs before create
 	preload(){
 		this.load.spritesheet({
 		key: 'player', 
@@ -37,20 +38,14 @@ class level1 extends Phaser.Scene{
 		this.load.image('item', 'Resources/yellow.png');
 	}
 
+	//Runs when scene first is made only once
 	create(){
         this.createUIVariables();
-        //Male sure this changes every level
-		this.createRecipeUI(eggsRecipe, eggsRecipeName);
-
+		this.createRecipeUI(eggsRecipe, eggsRecipeName); //Make sure the paramters change for every level
 		this.platforms = this.physics.add.staticGroup();
 		this.items = this.physics.add.group();
-
-		this.makePlatform(50, 536, 2);
-		this.makePlatform(400,450, 2);
-		this.makePlatform(25, 350);
-
+		this.spawnPlatformns();
 		this.spawnIngredients();
-		
 		this.player = this.add.sprite(32, 400, 'player');
 		this.physics.world.enableBody(this.player);
 		this.player.body.bounce.y = 0.2;
@@ -63,15 +58,16 @@ class level1 extends Phaser.Scene{
 			frames: this.anims.generateFrameNames('player', {start: 0, end: 38})
 		});
 		this.player.play('run');//Player's starting animation
-
 		this.cursors = this.input.keyboard.createCursorKeys();
 	}
 
+	//Runs every frame
 	update(time, delta){
 		this.updatePhysics();
 		this.updatePlayerPos();
 	}
 
+	//These variables deal with when a player collects an ingredient
 	createUIVariables() {
         this.itemsLefttoCollect = 12;
         this.itemsCollected = 0;
@@ -83,6 +79,7 @@ class level1 extends Phaser.Scene{
         this.collectItemUIAmount.setVisible(false);
     }
 
+	//This creates the UI on the top right of the screen, so the player knows how much of an item they need to collect
     createRecipeUI(recipe, name) {
         let yPos = 0;
         this.text = this.add.text(585,yPos,"Recipe: " + name);
@@ -99,6 +96,13 @@ class level1 extends Phaser.Scene{
 	spawnIngredients() {
 		this.makeIngredient(70, 0, eggPrefab);
         this.makeIngredient(300, 40, eggPrefab);
+	}
+
+	//This method is diffrent for every scene, but spawns in all the platforms
+	spawnPlatformns() {
+		this.makePlatform(50, 536, 2);
+		this.makePlatform(400,450, 2);
+		this.makePlatform(25, 350);
 	}
 	
 	//This runs every frame to update the players position (takes in user input)
