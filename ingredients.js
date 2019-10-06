@@ -7,40 +7,40 @@ var eggPrefab = {
 
 var milkPrefab = {
     "name" : "Milk",
-    "image" : "NOT YET IMPLEMENTED"
+    "image" : "item"
 };
 
 var chocolatePrefab = {
     "name" : "Chocolate",
-    "image" : "NOT YET IMPLEMENTED"
+    "image" : "item"
 };
 
 var sugarPrefab = {
     "name" : "Sugar",
-    "image" : "NOT YET IMPLEMENTED"
+    "image" : "item"
 };
 
 var flourPrefab = {
     "name" : "Flour",
-    "image" : "NOT YET IMPLEMENTED"
+    "image" : "item"
 };
 
 var strawberryPrefab = {
     "name" : "Strawberry",
-    "image" : "NOT YET IMPLEMENTED"
+    "image" : "item"
 };
 
 var applePrefab = {
     "name" : "Apple",
-    "image" : "NOT YET IMPLEMENTED"
+    "image" : "item"
 };
 
 var icingPrefab = {
     "name" : "Icing",
-    "image" : "NOT YET IMPLEMENTED"
+    "image" : "item"
 };
 
 var cherryPrefab = {
     "name" : "Cherry",
-    "image" : "NOT YET IMPLEMENTED"
+    "image" : "item"
 };

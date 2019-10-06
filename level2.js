@@ -1,7 +1,7 @@
-class level1 extends Phaser.Scene{
+class level2 extends Phaser.Scene{
 
 	constructor(){
-		super({key:"level1"});
+		super({key:"level2"});
 		this.platforms;
 		this.items;
 		this.player;
@@ -14,11 +14,13 @@ class level1 extends Phaser.Scene{
 		this.collectItemUIAmount; 
 
         //This are the variables that must be changed every level, it is the recipe ingredients and name
-        this.recipe = eggsRecipe;
-		this.recipeName = eggsRecipeName;
-		this.ingredientsCollected = eggsRecipePlayer;
-		this.recipeUI;
-		this.ingredient1;
+        this.recipe = chocolateStrawberriesRecipe;
+		this.recipeName =  chocolateStrawberriesRecipeName;
+		this.ingredientsCollected = chocolateStrawberriesRecipePlayer;
+        
+        this.recipeUI;
+        this.ingredient1;
+        this.ingredient2;
 	}
 
 	//Runs before create
@@ -54,7 +56,8 @@ class level1 extends Phaser.Scene{
 		this.collectItemUI = this.add.text(0,0,"");
 		this.collectItemUIAmount = this.add.text(0,0,"");
 		this.recipeUI = this.add.text(0,0,"");
-		this.ingredient1 = this.add.text(0,0,"");
+        this.ingredient1 = this.add.text(0,0,"");
+        this.ingredient2 = this.add.text(0,0,"");
 		this.createRecipeUI();
 		
 		this.add.tileSprite(0, 600, 800, 600, 'background');
@@ -78,7 +81,7 @@ class level1 extends Phaser.Scene{
 		
 		this.cursors = this.input.keyboard.createCursorKeys();
 
-		this.makeFlameTrap(400, 400, 5000);
+		this.makeFlameTrap(400, 450, 5000);
 
 		this.cameras.main.setLerp(0.9, 0.5);
 		this.cameras.main.setDeadzone(0.1, this.cameras.main.height / 2);
@@ -98,7 +101,9 @@ class level1 extends Phaser.Scene{
     createRecipeUI() {
         let yPos = 20;
         this.recipeUI = this.add.text(700,yPos,"Recipe: " + this.recipeName);
-        this.ingredient1 = this.add.text(700,yPos + 20,"Eggs: x2");
+        this.ingredient1 = this.add.text(700,yPos + 20,"Chocolate: x3");
+        this.ingredient2 = this.add.text(700,yPos + 40,"Strawberries: x3");
+            
 	}
 
 	//This creates the player sprite, animation, and gives the player physics
@@ -119,16 +124,19 @@ class level1 extends Phaser.Scene{
 
 	//This method is diferent for every scene, but creates all the ingredients in a scene
 	spawnIngredients() {
-		this.makeIngredient(70, 0, eggPrefab);
-        this.makeIngredient(300, 40, eggPrefab);
+		this.makeIngredient(400, 0, chocolatePrefab);
+        this.makeIngredient(300, 0, chocolatePrefab);
+        this.makeIngredient(500, 0, chocolatePrefab);
+        this.makeIngredient(600, 0, chocolatePrefab);
+        this.makeIngredient(800, 0, strawberryPrefab);
+        this.makeIngredient(900, 0, strawberryPrefab);
+        this.makeIngredient(1000, 0, strawberryPrefab);
+        this.makeIngredient(750, 0, strawberryPrefab);
 	}
 
 	//This method is diffrent for every scene, but spawns in all the platforms
 	spawnPlatformns() {
-		this.makePlatform(50, 536, 2);
-		this.makePlatform(400,450, 2);
-		this.makePlatform(25, 350);
-		this.makePlatform(100, 650, 4);
+		this.makePlatform(50, 500, 200);
 	}
 	
 	//This runs every frame to update the players position (takes in user input)
@@ -177,7 +185,8 @@ class level1 extends Phaser.Scene{
 		this.collectItemUI.x = xAnchor;
 		this.collectItemUIAmount.x = xAnchor;
 		this.recipeUI.x = xAnchor + this.cameras.main.width - 300;
-		this.ingredient1.x = xAnchor + this.cameras.main.width - 300;
+        this.ingredient1.x = xAnchor + this.cameras.main.width - 300;
+        this.ingredient2.x = xAnchor + this.cameras.main.width - 300;
 		//this.itemIngredient.x = xAnchor + this.cameras.main.width - 300;
 
 		//Update Y
@@ -186,7 +195,8 @@ class level1 extends Phaser.Scene{
 		this.collectItemUI.y = yAnchor;
 		this.collectItemUIAmount.y = yAnchor + 15;
 		this.recipeUI.y = yAnchor;
-		this.ingredient1.y = yAnchor + 15;
+        this.ingredient1.y = yAnchor + 15;
+        this.ingredient2.y = yAnchor + 30;
 		//this.itemIngredient.y = yAnchor + 20;
 	}
 
@@ -283,7 +293,12 @@ class level1 extends Phaser.Scene{
 
 	killPlayer(){
 		//this.player.destroy();
-		//this.sleep(2000);
+        //this.sleep(2000);
+        for (let i = 0; i < this.ingredientsCollected.length; i++) {
+            for (let [key, value] of Object.entries(this.ingredientsCollected[i])) {
+				this.ingredientsCollected[i][key] = 0;
+              }
+		}
 		this.scene.restart();
 	}
 }
